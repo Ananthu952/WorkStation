@@ -1,0 +1,38 @@
+# Environment variables
+.env
+.env.*
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Flask
+instance/
+
+# Uploaded files
+uploads/*
+
+# Keep the uploads directory itself
+!uploads/.gitkeep
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# IDE / editor
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
