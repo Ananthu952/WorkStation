@@ -116,7 +116,7 @@ export default function ClientDashboard() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Welcome back, {user?.firstName ?? "there"} 👋
+            Welcome, {user?.firstName ?? "there"} 👋
           </h1>
           <p className="text-gray-500 mt-1">Here&apos;s what&apos;s happening with your jobs.</p>
         </div>
@@ -129,13 +129,6 @@ export default function ClientDashboard() {
             className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-white outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
           />
         </div>
-      </div>
-
-      {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {STATS.map((stat) => (
-          <StatCard key={stat.label} {...stat} />
-        ))}
       </div>
 
       {/* Quick actions */}
