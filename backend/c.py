@@ -10,7 +10,7 @@ from app import create_app
 from app.models.provider_application import ProviderApplication
 from app.models.user import User
 
-app = create_app()
+app = create_app() 
 
 with app.app_context():
     applications = ProviderApplication.query.all()
