@@ -27,3 +27,4 @@ with app.app_context():
             f"current role={user.role if user else '?'} | "
             f"application status={a.status}"
         )
+        
