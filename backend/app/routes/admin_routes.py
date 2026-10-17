@@ -70,4 +70,4 @@ def reactivate_user(user_id):
 
     status = 200 if result["success"] else 404
 
-    return jsonify(result), status
+    return jsonify(result), status 

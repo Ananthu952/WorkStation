@@ -1,7 +1,7 @@
 """
 Quick diagnostic: prints the real role stored in the database for a given
 user, bypassing the frontend/API entirely.
-
+ 
 Usage:
   1. Edit EMAIL below.
   2. Run from backend root (venv activated): python check_user_role.py

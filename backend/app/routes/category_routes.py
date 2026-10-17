@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify 
 from flask_jwt_extended import jwt_required
 
 from app.services.category_service import CategoryService

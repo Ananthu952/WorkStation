@@ -1,5 +1,5 @@
 """
-One-off script to promote an existing user to "admin".
+One-off script to promote an existing user to "admin". 
 
 There is intentionally no way to self-register as admin through the public
 sign-up form (that would be a security hole) — admin accounts should always

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Search,
@@ -12,6 +13,7 @@ import {
   FileText,
   MessageSquare,
   UserCheck,
+  RefreshCw,
 } from "lucide-react";
 
 import { useAuth } from "../../context/AuthContext";
@@ -19,14 +21,8 @@ import StatCard from "../../components/client/StatCard";
 import WorkCard from "../../components/client/WorkCard";
 import BidCard from "../../components/client/BidCard";
 import ProviderCard from "../../components/client/ProviderCard";
+import { fetchWorks } from "../../services/work";
 
-// Mock data — replace with real API calls (services/work.js, services/bid.js) once available
-const STATS = [
-  { icon: Briefcase, label: "Active Works", value: "3", accent: "blue" },
-  { icon: Clock, label: "Pending Bids", value: "8", accent: "amber" },
-  { icon: CheckCircle2, label: "Completed Jobs", value: "12", accent: "green" },
-  { icon: DollarSign, label: "Total Spent", value: "$2,340", accent: "purple" },
-];
 
 const QUICK_ACTIONS = [
   { icon: Plus, label: "Post a Job", to: "/client/create-work" },
@@ -35,103 +31,102 @@ const QUICK_ACTIONS = [
   { icon: UserCheck, label: "Become a Provider", to: "/become-provider" },
 ];
 
-const RECENT_WORKS = [
-  {
-    title: "Fix leaking kitchen faucet",
-    categoryName: "Plumbing",
-    budget: 120,
-    deadline: "2026-08-10",
-    status: "pending",
-  },
-  {
-    title: "Repaint living room walls",
-    categoryName: "Painting",
-    budget: 480,
-    deadline: "2026-08-15",
-    status: "in_progress",
-  },
-  {
-    title: "Install ceiling fan",
-    categoryName: "Electrical",
-    budget: 150,
-    deadline: "2026-08-05",
-    status: "completed",
-  },
-];
-
-const RECENT_BIDS = [
-  {
-    providerName: "Marcus Lee",
-    jobTitle: "Fix leaking kitchen faucet",
-    amount: 120,
-    rating: 4.9,
-    status: "pending",
-  },
-  {
-    providerName: "Sarah Chen",
-    jobTitle: "Fix leaking kitchen faucet",
-    amount: 95,
-    rating: 4.8,
-    status: "pending",
-  },
-  {
-    providerName: "David Ortiz",
-    jobTitle: "Repaint living room walls",
-    amount: 340,
-    rating: 4.7,
-    status: "accepted",
-  },
-];
-
-const RECOMMENDED_PROVIDERS = [
-  { name: "Marcus Lee", profession: "Plumber", rating: 4.9, jobsCompleted: 210 },
-  { name: "Priya Nair", profession: "Electrician", rating: 4.8, jobsCompleted: 175 },
-  { name: "David Ortiz", profession: "Painter", rating: 4.7, jobsCompleted: 98 },
-];
-
-const ACTIVITY = [
-  {
-    icon: MessageSquare,
-    text: "Marcus Lee sent a bid on “Fix leaking kitchen faucet”",
-    time: "2 hours ago",
-  },
-  {
-    icon: CheckCircle2,
-    text: "You accepted David Ortiz's bid for “Repaint living room walls”",
-    time: "1 day ago",
-  },
-  {
-    icon: FileText,
-    text: "You posted a new job: “Install ceiling fan”",
-    time: "1 week ago",
-  },
-];
-
 export default function ClientDashboard() {
   const { user } = useAuth();
 
+  const [recentWorks, setRecentWorks] = useState([]);
+  const [worksLoading, setWorksLoading] = useState(true);
+  const [worksError, setWorksError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [retryCount, setRetryCount] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadRecentWorks() {
+      try {
+        setWorksLoading(true);
+        setWorksError("");
+
+        const response = await fetchWorks();
+
+        // Support common API response formats.
+        const works = Array.isArray(response)
+  ? response
+  : Array.isArray(response?.works)
+    ? response.works
+    : Array.isArray(response?.data)
+      ? response.data
+      : [];
+
+        if (cancelled) return;
+
+        const sortedWorks = [...works].sort((a, b) => {
+          const dateA = new Date(
+            a.created_at ?? a.createdAt ?? 0
+          ).getTime();
+
+          const dateB = new Date(
+            b.created_at ?? b.createdAt ?? 0
+          ).getTime();
+
+          return dateB - dateA;
+        });
+
+        setRecentWorks(sortedWorks.slice(0, 3));
+      } catch (error) {
+        console.error("Failed to load recent works:", error);
+
+        if (!cancelled) {
+          setWorksError(
+            "We couldn't load your recent work requests. Please try again."
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setWorksLoading(false);
+        }
+      }
+    }
+
+    loadRecentWorks();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [retryCount]);
+
+  const filteredWorks = recentWorks.filter((work) =>
+    work.title?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="flex flex-col gap-8">
-      {/* Welcome + Search */}
+      {/* Welcome and Search */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
             Welcome, {user?.firstName ?? "there"} 👋
           </h1>
-          <p className="text-gray-500 mt-1">Here&apos;s what&apos;s happening with your jobs.</p>
+          <p className="text-gray-500 mt-1">
+            Here's what's happening with your jobs.
+          </p>
         </div>
 
         <div className="relative w-full md:w-80">
           <Search className="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
           <input
-            type="text"
-            placeholder="Search your jobs..."
+            type="search"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Search your recent jobs..."
+            aria-label="Search recent jobs"
             className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-white outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
           />
         </div>
       </div>
 
-      {/* Quick actions */}
+      {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {QUICK_ACTIONS.map(({ icon: Icon, label, to }) => (
           <Link
@@ -142,93 +137,160 @@ export default function ClientDashboard() {
             <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center">
               <Icon className="w-5 h-5 text-blue-600" />
             </div>
-            <span className="text-sm font-medium text-gray-700">{label}</span>
+            <span className="text-sm font-medium text-gray-700">
+              {label}
+            </span>
           </Link>
         ))}
       </div>
 
-      {/* Main grid: works/bids left, notifications/timeline right */}
+      {/* Main Dashboard Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left column */}
+        {/* Left Column */}
         <div className="lg:col-span-2 flex flex-col gap-8">
+          {/* Recent Works */}
           <section>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-gray-900">Recent Works</h2>
-              <Link to="/client/my-works" className="text-sm text-blue-600 font-medium hover:underline">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">
+                  Recent Works
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  Your latest service requests
+                </p>
+              </div>
+
+              <Link
+                to="/client/my-works"
+                className="text-sm text-blue-600 font-medium hover:underline"
+              >
                 View all
               </Link>
             </div>
+
             <div className="flex flex-col gap-3">
-              {RECENT_WORKS.map((work) => (
-                <WorkCard key={work.title} {...work} />
-              ))}
+              {worksLoading ? (
+                <div className="bg-white border border-gray-100 rounded-2xl p-8 text-center">
+                  <RefreshCw className="w-6 h-6 text-blue-600 animate-spin mx-auto mb-3" />
+                  <p className="text-sm text-gray-500">
+                    Loading your recent works...
+                  </p>
+                </div>
+              ) : worksError ? (
+                <div className="bg-white border border-red-100 rounded-2xl p-6 text-center">
+                  <p className="text-sm text-red-600">{worksError}</p>
+                  <button
+                    type="button"
+                    onClick={() => setRetryCount((count) => count + 1)}
+                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Try again
+                  </button>
+                </div>
+              ) : filteredWorks.length === 0 ? (
+                <div className="bg-white border border-gray-100 rounded-2xl p-8 text-center">
+                  <FolderOpen className="w-8 h-8 text-gray-400 mx-auto mb-3" />
+
+                  <h3 className="font-semibold text-gray-900">
+                    {searchTerm
+                      ? "No matching work requests"
+                      : "No work requests yet"}
+                  </h3>
+
+                  <p className="text-sm text-gray-500 mt-2">
+                    {searchTerm
+                      ? "Try a different search term."
+                      : "Create your first service request to see it here."}
+                  </p>
+
+                  {!searchTerm && (
+                    <Link
+                      to="/client/create-work"
+                      className="inline-flex mt-4 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700"
+                    >
+                      Post a Job
+                    </Link>
+                  )}
+                </div>
+              ) : (
+                filteredWorks.map((work) => (
+  <Link
+    key={work.id}
+    to={`/client/works/${work.id}`}
+    className="block rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    <WorkCard
+      {...work}
+      categoryName={
+        work.categoryName ?? work.category_name ?? "General"
+      }
+    />
+  </Link>
+))
+              )}
             </div>
           </section>
 
+          {/* Recent Bids: connect to real bid API separately */}
           <section>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-gray-900">Recent Bids</h2>
-              <Link to="/client/bids" className="text-sm text-blue-600 font-medium hover:underline">
-                View all
+              <h2 className="text-lg font-bold text-gray-900">
+                Recent Bids
+              </h2>
+
+              <Link
+                to="/client/my-works"
+                className="text-sm text-blue-600 font-medium hover:underline"
+              >
+                View works
               </Link>
             </div>
-            <div className="flex flex-col gap-3">
-              {RECENT_BIDS.map((bid, index) => (
-                <BidCard key={`${bid.providerName}-${index}`} {...bid} />
-              ))}
+
+            <div className="bg-white border border-gray-100 rounded-2xl p-6">
+              <p className="text-sm text-gray-500">
+                Your bid activity will appear here when connected to the bid API.
+              </p>
             </div>
           </section>
 
+          {/* Recommended Providers */}
           <section>
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Recommended Providers</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {RECOMMENDED_PROVIDERS.map((provider) => (
-                <ProviderCard key={provider.name} {...provider} />
-              ))}
+            <h2 className="text-lg font-bold text-gray-900 mb-4">
+              Recommended Providers
+            </h2>
+
+            <div className="bg-white border border-gray-100 rounded-2xl p-6">
+              <p className="text-sm text-gray-500">
+                Recommended providers will appear here when provider data is connected.
+              </p>
             </div>
           </section>
         </div>
 
-        {/* Right column */}
+        {/* Right Column */}
         <div className="flex flex-col gap-8">
+          {/* Notifications */}
           <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <div className="flex items-center gap-2 mb-4">
               <Bell className="w-4 h-4 text-blue-600" />
               <h2 className="font-bold text-gray-900">Notifications</h2>
             </div>
-            <div className="flex flex-col gap-4">
-              {ACTIVITY.slice(0, 2).map((item, index) => (
-                <div key={index} className="flex gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-                    <item.icon className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-700 leading-snug">{item.text}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{item.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+
+            <p className="text-sm text-gray-500">
+              Notifications will appear here when notification data is connected.
+            </p>
           </section>
 
+          {/* Activity Timeline */}
           <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <h2 className="font-bold text-gray-900 mb-4">Activity Timeline</h2>
-            <div className="flex flex-col gap-5">
-              {ACTIVITY.map((item, index) => (
-                <div key={index} className="flex gap-3 relative">
-                  {index !== ACTIVITY.length - 1 && (
-                    <span className="absolute left-4 top-8 w-px h-full bg-gray-100" />
-                  )}
-                  <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0 z-10">
-                    <item.icon className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-700 leading-snug">{item.text}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{item.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <h2 className="font-bold text-gray-900 mb-4">
+              Activity Timeline
+            </h2>
+
+            <p className="text-sm text-gray-500">
+              Your recent activity will appear here when connected to real activity data.
+            </p>
           </section>
         </div>
       </div>
