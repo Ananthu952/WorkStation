@@ -5,7 +5,6 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import RoleRoute from "./routes/RoleRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
 import AdminLayout from "./layouts/AdminLayout";
-
 import Landing from "./pages/public/Landing";
 import Login from "./pages/public/Login";
 import Register from "./pages/public/Register";
@@ -61,7 +60,7 @@ export default function App() {
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/marketplace" element={<Marketplace />} />
-
+              <Route path="/marketplace/:providerId" element={<ProviderProfile />} />
               {/* Provider-only routes — requires the "provider" role, granted
                   after admin approves a Provider Application. */}
               <Route element={<RoleRoute allowedRoles={["provider"]} />}>

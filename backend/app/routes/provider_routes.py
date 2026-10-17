@@ -26,27 +26,6 @@ def create_provider():
 
     return jsonify(result), status
 
-@provider_bp.get("/")
-def get_providers():
-
-    providers = ProviderService.get_all()
-
-    return jsonify({
-        "success": True,
-        "providers": [
-            {
-                "id": p.id,
-                "business_name": p.business_name,
-                "city": p.city,
-                "state": p.state,
-                "experience": p.experience,
-                "hourly_rate": p.hourly_rate,
-                "rating": p.average_rating,
-                "verified": p.is_verified
-            }
-            for p in providers
-        ]
-    })
 
 
 @provider_bp.get("/<int:provider_id>")
@@ -126,4 +105,26 @@ def get_my_provider_profile():
             "category_id": provider.category_id,
             "category_name": provider.category.name if provider.category else None,
         }
+    })
+@provider_bp.get("/")
+def get_providers():
+    providers = ProviderService.get_all()
+
+    return jsonify({
+        "success": True,
+        "providers": [
+            {
+                "id": p.id,
+                "business_name": p.business_name,
+                "city": p.city,
+                "state": p.state,
+                "experience": p.experience,
+                "hourly_rate": p.hourly_rate,
+                "rating": p.average_rating,
+                "verified": p.is_verified,
+                "category_id": p.category_id,
+                "category_name": p.category.name if p.category else None,
+            }
+            for p in providers
+        ]
     })

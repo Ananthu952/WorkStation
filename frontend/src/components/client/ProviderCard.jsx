@@ -1,30 +1,71 @@
-import { Star, ShieldCheck } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Star, ShieldCheck, MapPin, Briefcase } from "lucide-react";
 
-export default function ProviderCard({ name, profession, rating, jobsCompleted }) {
+export default function ProviderCard({ provider }) {
+  const name = provider.business_name || "Service Provider";
+  const profession = provider.category_name || "Service Provider";
+  const location = [provider.city, provider.state].filter(Boolean).join(", ");
   const initials = name
-    .split(" ")
-    .map((n) => n[0])
+    .split(/\s+/)
+    .map((word) => word[0])
     .join("")
+    .slice(0, 2)
     .toUpperCase();
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col items-center text-center hover:shadow-md transition-shadow">
-      <div className="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-lg mb-3">
+    <div className="flex flex-col items-center rounded-2xl border border-gray-100 bg-white p-5 text-center shadow-sm transition-shadow hover:shadow-md">
+      <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-lg font-semibold text-white">
         {initials}
       </div>
-      <p className="font-semibold text-gray-900 flex items-center gap-1">
+
+      <p className="flex items-center gap-1 font-semibold text-gray-900">
         {name}
-        <ShieldCheck className="w-4 h-4 text-blue-500" />
+        {provider.verified && (
+          <ShieldCheck
+            className="h-4 w-4 text-blue-500"
+            aria-label="Verified provider"
+          />
+        )}
       </p>
-      <p className="text-sm text-gray-500 mb-2">{profession}</p>
-      <div className="flex items-center gap-1 mb-4">
-        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-        <span className="text-sm font-medium text-gray-700">{rating}</span>
-        <span className="text-sm text-gray-400">({jobsCompleted} jobs)</span>
+
+      <p className="mb-2 text-sm text-gray-500">{profession}</p>
+
+      {location && (
+        <p className="mb-3 flex items-center gap-1 text-sm text-gray-500">
+          <MapPin className="h-4 w-4 shrink-0" />
+          {location}
+        </p>
+      )}
+
+      <div className="mb-4 flex flex-wrap items-center justify-center gap-3 text-sm text-gray-600">
+        {provider.rating != null && (
+          <span className="flex items-center gap-1">
+            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+            {Number(provider.rating).toFixed(1)}
+          </span>
+        )}
+
+        {provider.experience != null && (
+          <span className="flex items-center gap-1">
+            <Briefcase className="h-3.5 w-3.5" />
+            {provider.experience} years' experience
+          </span>
+        )}
       </div>
-      <button className="w-full bg-blue-50 text-blue-700 py-2 rounded-xl text-sm font-medium hover:bg-blue-100 transition-colors">
-        View Profile
-      </button>
+
+      {provider.hourly_rate != null && (
+        <p className="mb-4 font-semibold text-gray-900">
+          ₹{provider.hourly_rate}
+          <span className="text-sm font-normal text-gray-500"> / hour</span>
+        </p>
+      )}
+
+      <Link
+  to={`/marketplace/${provider.id}`}
+  className="mt-auto block w-full rounded-xl bg-blue-50 py-2 text-center text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100"
+>
+  View Profile
+</Link>
     </div>
   );
 }
