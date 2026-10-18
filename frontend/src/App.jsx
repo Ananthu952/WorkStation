@@ -24,6 +24,7 @@ import BrowseJobs from "./pages/provider/BrowseJobs";
 import JobDetails from "./pages/provider/JobDetails";
 import MyBids from "./pages/provider/MyBids";
 import ProviderProfile from "./pages/provider/ProviderProfile";
+import PublicProviderProfile from "./pages/PublicProviderProfile";
 import Notifications from "./pages/Notifications";
 import Settings from "./pages/Settings";
 import Marketplace from "./pages/Marketplace";
@@ -79,6 +80,11 @@ export default function App() {
                 <Route path="/admin/providers" element={<AdminProviders />} />
                 <Route path="/admin/users" element={<AdminUsers />} />
                 <Route path="/admin/categories" element={<AdminCategories />} />
+                <Route
+  path="/marketplace/:providerId"
+  element={<PublicProviderProfile />}
+/>
+<Route path="/marketplace" element={<Marketplace />} />
               </Route>
             </Route>
           </Route>
