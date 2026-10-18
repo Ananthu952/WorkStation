@@ -1,7 +1,6 @@
 from datetime import datetime
 from app.extensions import db
 
-
 class Bidding(db.Model):
     __tablename__ = "biddings"
 
