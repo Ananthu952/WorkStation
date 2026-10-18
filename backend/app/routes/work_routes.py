@@ -11,7 +11,6 @@ work_bp = Blueprint(
     url_prefix="/api/v1/works"
 )
 
-
 @work_bp.post("/")
 @jwt_required()
 @role_required("client")
