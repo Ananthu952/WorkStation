@@ -1,6 +1,5 @@
 from app.extensions import db
 
-
 class ServiceCategory(db.Model):
     __tablename__ = "service_categories"
 
