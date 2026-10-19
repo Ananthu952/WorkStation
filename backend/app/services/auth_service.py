@@ -2,7 +2,6 @@ from app.extensions import db
 from app.models.user import User
 from app.utils.password import hash_password, check_password
 
-
 class AuthService:
 
     @staticmethod
