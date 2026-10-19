@@ -10,7 +10,6 @@ provider_application_bp = Blueprint(
     url_prefix="/api/v1/provider-applications"
 )
 
-
 # ----------------------------
 # Submit an application (any logged-in client)
 # ----------------------------
