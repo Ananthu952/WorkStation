@@ -5,7 +5,6 @@ from app.repository.bidding_repository import BiddingRepository
 from app.repository.provider_repository import ProviderRepository
 from app.repository.work_repository import WorkRepository
 
-
 class BiddingService:
 
     @staticmethod
