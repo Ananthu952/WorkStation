@@ -3,7 +3,6 @@ from app.models.provider_application import ProviderApplication
 from app.models.user import User
 from app.services.provider_service import ProviderService
 
-
 class ProviderApplicationService:
 
     @staticmethod
