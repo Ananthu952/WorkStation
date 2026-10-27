@@ -1,5 +1,4 @@
 import { Wrench } from "lucide-react";
-
 const FOOTER_COLUMNS = [
   {
     title: "Company",

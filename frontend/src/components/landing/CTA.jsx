@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-
 export default function CTA() {
   return (
     <section className="px-6 py-24 max-w-[1280px] mx-auto">

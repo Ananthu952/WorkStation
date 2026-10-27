@@ -1,11 +1,9 @@
 import { Search, Star, ShieldCheck, Clock } from "lucide-react";
-
 const TRUST_STATS = [
   { icon: Star, label: "4.9/5 average rating" },
   { icon: ShieldCheck, label: "Background-checked pros" },
   { icon: Clock, label: "Same-day availability" },
 ];
-
 export default function Hero() {
   return (
     <section className="pt-40 pb-24 px-6 bg-gradient-to-b from-blue-50/60 to-white">

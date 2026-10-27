@@ -1,5 +1,4 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
 // Usage:
 // <Pagination currentPage={page} totalPages={10} onPageChange={setPage} />
 export default function Pagination({ currentPage, totalPages, onPageChange }) {

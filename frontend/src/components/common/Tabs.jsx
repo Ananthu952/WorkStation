@@ -1,9 +1,3 @@
-// Usage:
-// <Tabs
-//   tabs={[{ label: "All", value: "all" }, { label: "Pending", value: "pending" }]}
-//   value={activeTab}
-//   onChange={setActiveTab}
-// />
 export default function Tabs({ tabs, value, onChange }) {
   return (
     <div className="flex gap-2 overflow-x-auto pb-1">

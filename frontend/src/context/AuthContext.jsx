@@ -2,7 +2,6 @@ import { createContext, useContext, useState, useEffect, useCallback } from "rea
 import * as authService from "../services/auth";
 
 const AuthContext = createContext(null);
-
 // Your backend's user shape may differ slightly from what the rest of the
 // frontend expects. This normalizes it in one place so every component
 // (navbar initials, dashboard greetings, RoleRoute checks, etc.) keeps
