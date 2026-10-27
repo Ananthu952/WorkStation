@@ -2,7 +2,6 @@ from app.extensions import db
 from app.models import User, ServiceProvider, Work
 from app.models.provider_application import ProviderApplication
 
-
 class AdminService:
 
     @staticmethod

@@ -1,7 +1,6 @@
 from app.models.service_category import ServiceCategory
 from app.repository.category_repository import CategoryRepository
 
-
 class CategoryService:
 
     @staticmethod

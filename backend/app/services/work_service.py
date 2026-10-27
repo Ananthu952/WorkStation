@@ -5,7 +5,6 @@ from app.models.work import Work
 from app.repository.work_repository import WorkRepository
 from app.repository.category_repository import CategoryRepository
 
-
 class WorkService:
 
     @staticmethod

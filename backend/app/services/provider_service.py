@@ -4,7 +4,6 @@ from app.models.service_provider import ServiceProvider
 from app.repository.provider_repository import ProviderRepository
 from app.repository.category_repository import CategoryRepository
 
-
 class ProviderService:
 
     @staticmethod

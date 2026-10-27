@@ -9,7 +9,6 @@ user_bp = Blueprint(
     url_prefix="/api/v1/users"
 )
 
-
 @user_bp.patch("/me")
 @jwt_required()
 def update_profile():

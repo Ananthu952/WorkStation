@@ -1,7 +1,6 @@
 from app.models.bidding import Bidding
 from app.extensions import db
 
-
 class BiddingRepository:
 
     @staticmethod

@@ -1,7 +1,6 @@
 from app.extensions import db
 from datetime import datetime
 
-
 class ProviderApplication(db.Model):
     __tablename__ = "provider_applications"
 
